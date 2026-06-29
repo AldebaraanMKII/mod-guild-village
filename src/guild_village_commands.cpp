@@ -73,8 +73,8 @@ namespace
         return sConfigMgr->GetOption<uint32>("GuildVillage.Default.Map", 37);
     }
 
-    // --- definice bossů (id1 + lokalizované jméno)
-    struct BossDef { uint32 id1; char const* name_cs; char const* name_en; };
+    // --- definice bossů (id + lokalizované jméno)
+    struct BossDef { uint32 id; char const* name_cs; char const* name_en; };
     static BossDef kBosses[] = {
         { 987400, "Thranok the Unyielding",   "Thranok the Unyielding"   },
         { 987401, "Thalor the Lifebinder",    "Thalor the Lifebinder"    },
@@ -96,11 +96,11 @@ namespace
         return std::nullopt;
     }
 
-    static std::optional<uint32> FindBossGuid(uint32 id1, uint32 phaseMask)
+    static std::optional<uint32> FindBossGuid(uint32 id, uint32 phaseMask)
     {
         if (QueryResult r = WorldDatabase.Query(
-            "SELECT guid FROM creature WHERE id1={} AND map={} AND phaseMask={} LIMIT 1",
-            id1, DefMap(), phaseMask))
+            "SELECT guid FROM creature WHERE id={} AND map={} AND phaseMask={} LIMIT 1",
+            id, DefMap(), phaseMask))
             return (*r)[0].Get<uint32>();
         return std::nullopt;
     }
@@ -133,7 +133,7 @@ namespace
         uint32 phaseMask = *phOpt;
 
         // 2) GUID spawnu bossa
-        auto guidOpt = FindBossGuid(b.id1, phaseMask);
+        auto guidOpt = FindBossGuid(b.id, phaseMask);
         if (!guidOpt)
             return Acore::StringFormat("|cff00ffff{}:|r {}", BossName(b), T("neinstalováno", "not installed"));
 
